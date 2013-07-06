@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <!-- 状态显示 -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dip"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="64dp"
+            android:layout_height="match_parent" >
+        </TextView>
+    </LinearLayout>
+    <!-- 雷区 -->
+
+    <GridView
+        android:id="@+id/grid_minefield"
+        android:layout_width="match_parent"
+        android:layout_height="320dip"
+        android:columnWidth="38dp"
+        android:horizontalSpacing="1dp"
+        android:numColumns="7"
+        android:verticalSpacing="1dp" >
+    </GridView>
+
+</LinearLayout>
