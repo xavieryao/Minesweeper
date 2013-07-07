@@ -8,7 +8,10 @@
         android:id="@+id/tv_mine"
         android:layout_width="38dp"
         android:layout_height="38dp" 
-         android:background="#FF0011FF"
+        android:textSize="20sp"
+        android:textColor = "#FF00CC33"
+        android:gravity="center"
+         android:background="#FF00CCFF"
         />
 
 </LinearLayout>

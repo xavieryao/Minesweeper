@@ -7,5 +7,15 @@
 
     <!-- Strings for buttons on main activity -->
     <string name="start">Start</string>
-
+    
+    
+    
+    <string name="side_length_hint">Input side length here (>0)</string>
+    <string name="mine_amount_hint">Input mine amount here (>0)</string>
+	<string name="side_length">Side Length</string>
+	<string name="mine_amount">Mine Amount</string>
+    
+	<string name="default_mine_amount">10</string>
+	<string name="default_side_length">7</string>
+	
 </resources>

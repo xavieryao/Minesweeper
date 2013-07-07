@@ -14,7 +14,7 @@ public class MineField {
 	private int[] mMap;
 	private int mSideLength;
 	private int mMineAmount;
-	private boolean[] mVisibilities;
+	private boolean[] mVisible;
 	private boolean[] mIsEmpty;
 
 	/**
@@ -32,7 +32,7 @@ public class MineField {
 		}
 		int area = sideLength * sideLength;
 		mMap = new int[area];
-		mVisibilities = new boolean[area];
+		mVisible = new boolean[area];
 		mIsEmpty = new boolean[area];
 		mSideLength = sideLength;
 		mMineAmount = mines;
@@ -46,7 +46,7 @@ public class MineField {
 	 * @return whether the block is visible
 	 */
 	public boolean isVisable(int position) {
-		return mVisibilities[position];
+		return mVisible[position];
 	}
 
 	/**
@@ -55,8 +55,8 @@ public class MineField {
 	 * @return whether all blocks are visible.
 	 */
 	public boolean won() {
-		for (int i = 0; i < mVisibilities.length; i++) {
-			if (!mVisibilities[i] && mMap[i] != BlockState.HAS_MINE) {
+		for (int i = 0; i < mVisible.length; i++) {
+			if (!mVisible[i] && mMap[i] != BlockState.HAS_MINE) {
 				return false;
 			}
 		}
@@ -71,7 +71,7 @@ public class MineField {
 	 *            the position of the block to be made visible.
 	 */
 	public void makeVisible(int position) {
-		mVisibilities[position] = true;
+		mVisible[position] = true;
 	}
 
 	/**
@@ -92,9 +92,7 @@ public class MineField {
 	 */
 	public void createMineField(int bannedId) {
 		int maxId = mSideLength * mSideLength;
-		System.out.println("--createMineField");
 		addMinesToMap(maxId, bannedId);
-		print();
 		for (int i = 0; i < maxId; i++) {
 			if (mMap[i] != BlockState.HAS_MINE) {
 				mMap[i] = getNum(i, maxId);
@@ -113,64 +111,49 @@ public class MineField {
 	private HashSet<Integer> match(int position, int maxId, int condition) {
 		HashSet<Integer> matchedBlocks = new HashSet<Integer>();
 		int cursor = position + 1;
-		if (cursor < maxId) {
-			if (mMap[cursor] == condition && (cursor % mSideLength != 0)
-					&& !mIsEmpty[cursor]) {
-				matchedBlocks.add(cursor);
-			}
+		if (cursor < maxId && mMap[cursor] == condition
+				&& (cursor % mSideLength != 0) && !mIsEmpty[cursor]) {
+			matchedBlocks.add(cursor);
 		}
-		cursor = position - 1;
-		if (cursor >= 0) {
-			if (mMap[cursor] == condition && ((cursor + 1) % mSideLength != 0)
-					&& !mIsEmpty[cursor]) {
-				matchedBlocks.add(cursor);
-			}
-		}
-		cursor = position - mSideLength - 1;
-		if (cursor >= 0) {
-			if (mMap[cursor] == condition && ((cursor + 1) % mSideLength != 0)
-					&& !mIsEmpty[cursor]) {
-				matchedBlocks.add(cursor);
-			}
-		}
-		cursor = position - mSideLength;
-		if (cursor >= 0) {
-			if (mMap[cursor] == condition && !mIsEmpty[cursor]) {
-				matchedBlocks.add(cursor);
-			}
-		}
-		cursor = position - mSideLength + 1;
-		if (cursor >= 0) {
-			if (mMap[cursor] == condition && (cursor % mSideLength != 0)
-					&& !mIsEmpty[cursor]) {
-				matchedBlocks.add(cursor);
-			}
-		}
-		cursor = position + mSideLength;
-		if (cursor < maxId) {
-			if (mMap[cursor] == condition && !mIsEmpty[cursor]) {
-				matchedBlocks.add(cursor);
-			}
-		}
-		cursor = position + mSideLength - 1;
-		if (cursor < maxId) {
-			if (mMap[cursor] == condition && ((cursor + 1) % mSideLength != 0)
-					&& !mIsEmpty[cursor]) {
-				matchedBlocks.add(cursor);
-				System.out.println("--The cursor found a mine at" + cursor);
 
-			}
+		cursor = position - 1;
+		if (cursor >= 0 && mMap[cursor] == condition
+				&& ((cursor + 1) % mSideLength != 0) && !mIsEmpty[cursor]) {
+			matchedBlocks.add(cursor);
+		}
+
+		cursor = position - mSideLength - 1;
+		if (cursor >= 0 && mMap[cursor] == condition
+				&& ((cursor + 1) % mSideLength != 0) && !mIsEmpty[cursor]) {
+			matchedBlocks.add(cursor);
+		}
+
+		cursor = position - mSideLength;
+		if (cursor >= 0 && mMap[cursor] == condition && !mIsEmpty[cursor]) {
+			matchedBlocks.add(cursor);
+		}
+
+		cursor = position - mSideLength + 1;
+		if (cursor >= 0 && mMap[cursor] == condition
+				&& (cursor % mSideLength != 0) && !mIsEmpty[cursor]) {
+			matchedBlocks.add(cursor);
+		}
+
+		cursor = position + mSideLength;
+		if (cursor < maxId && mMap[cursor] == condition && !mIsEmpty[cursor]) {
+			matchedBlocks.add(cursor);
+		}
+
+		cursor = position + mSideLength - 1;
+		if (cursor < maxId && mMap[cursor] == condition
+				&& ((cursor + 1) % mSideLength != 0) && !mIsEmpty[cursor]) {
+			matchedBlocks.add(cursor);
 		}
 		cursor = position + mSideLength + 1;
-		if (cursor < maxId) {
-			if (mMap[cursor] == condition && (cursor % mSideLength != 0)
-					&& !mIsEmpty[cursor]) {
-				matchedBlocks.add(cursor);
-				System.out.println("--The cursor found a mine at" + cursor);
-			}
+		if (cursor < maxId && mMap[cursor] == condition
+				&& (cursor % mSideLength != 0) && !mIsEmpty[cursor]) {
+			matchedBlocks.add(cursor);
 		}
-		System.out.println("--Current position is:" + position
-				+ " The amount of matched blocks is:" + matchedBlocks.size());
 		return matchedBlocks;
 	}
 
@@ -194,9 +177,7 @@ public class MineField {
 		}
 		for (Integer i : mines) {
 			mMap[i] = BlockState.HAS_MINE;
-			System.out.println("--Mine: " + (i + 1));
 		}
-		System.out.println("--addMinesToMap Done.");
 	}
 
 	/**
@@ -204,8 +185,14 @@ public class MineField {
 	 * 
 	 * @return amount
 	 */
-	public int getMineCount() {
-		return mMineAmount;
+	public int getRemainedMineCount() {
+		int amount = 0;
+		for(int i:mMap){
+			if(i == BlockState.HAS_MINE){
+				amount++;
+			}
+		}
+		return amount;
 	}
 
 	/**
@@ -237,27 +224,80 @@ public class MineField {
 	}
 
 	public void remark(int position) {
+		if(mMap[position]==0){
+			mIsEmpty[position]=true;
+		}
 		HashSet<Integer> nearbySafeBlocks = match(position, mSideLength
 				* mSideLength, 0);
-		while(nearbySafeBlocks.size()>0){
+		while (nearbySafeBlocks.size() > 0) {
 			markAsEmpty(nearbySafeBlocks);
-			nearbySafeBlocks = search(nearbySafeBlocks,mSideLength*mSideLength);
+			nearbySafeBlocks = search(nearbySafeBlocks, mSideLength
+					* mSideLength);
 		}
-		}
-	
-	private HashSet<Integer> search(HashSet<Integer> nearbySafeBlocks,int maxId){
+	}
+
+	private HashSet<Integer> search(HashSet<Integer> nearbySafeBlocks, int maxId) {
 		HashSet<Integer> list = new HashSet<Integer>();
-		for(int i:nearbySafeBlocks){
-			list.addAll(match(i,mSideLength*mSideLength,0));
+		for (int i : nearbySafeBlocks) {
+			list.addAll(match(i, mSideLength * mSideLength, 0));
 		}
 		return list;
 	}
-	
+
 	private void markAsEmpty(HashSet<Integer> list) {
 		if (list.size() > 0) {
+			int maxId = mSideLength * mSideLength;
 			for (int i : list) {
 				mIsEmpty[i] = true;
-				mVisibilities[i]=true;
+				mVisible[i] = true;
+				int cursor = i + 1;
+				if (cursor < maxId && mMap[cursor] != BlockState.HAS_MINE
+						&& (cursor % mSideLength != 0) && !mIsEmpty[cursor]) {
+					mVisible[cursor] = true;
+				}
+				cursor = i - 1;
+				if (cursor >= 0 && mMap[cursor] != BlockState.HAS_MINE
+						&& ((cursor + 1) % mSideLength != 0)
+						&& !mIsEmpty[cursor]) {
+					mVisible[cursor] = true;
+				}
+
+				cursor = i - mSideLength - 1;
+				if (cursor >= 0 && mMap[cursor] != BlockState.HAS_MINE
+						&& ((cursor + 1) % mSideLength != 0)
+						&& !mIsEmpty[cursor]) {
+					mVisible[cursor] = true;
+				}
+
+				cursor = i - mSideLength;
+				if (cursor >= 0 && mMap[cursor] != BlockState.HAS_MINE
+						&& !mIsEmpty[cursor]) {
+					mVisible[cursor] = true;
+				}
+
+				cursor = i - mSideLength + 1;
+				if (cursor >= 0 && mMap[cursor] != BlockState.HAS_MINE
+						&& (cursor % mSideLength != 0) && !mIsEmpty[cursor]) {
+					mVisible[cursor] = true;
+				}
+
+				cursor = i + mSideLength;
+				if (cursor < maxId && mMap[cursor] != BlockState.HAS_MINE
+						&& !mIsEmpty[cursor]) {
+					mVisible[cursor] = true;
+				}
+
+				cursor = i + mSideLength - 1;
+				if (cursor < maxId && mMap[cursor] != BlockState.HAS_MINE
+						&& ((cursor + 1) % mSideLength != 0)
+						&& !mIsEmpty[cursor]) {
+					mVisible[cursor] = true;
+				}
+				cursor = i + mSideLength + 1;
+				if (cursor < maxId && mMap[cursor] != BlockState.HAS_MINE
+						&& (cursor % mSideLength != 0) && !mIsEmpty[cursor]) {
+					mVisible[cursor] = true;
+				}
 			}
 		}
 	}

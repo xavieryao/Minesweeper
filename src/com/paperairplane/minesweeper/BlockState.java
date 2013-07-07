@@ -1,5 +1,5 @@
 package com.paperairplane.minesweeper;
 
-public class BlockState{
-	public static int HAS_MINE = -1;
+public class BlockState {
+	public final static int HAS_MINE = -1;
 }

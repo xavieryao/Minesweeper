@@ -11,7 +11,10 @@
         android:layout_height="100dip"
         android:orientation="horizontal" >
 
+        <!-- 剩余地雷 -->
+
         <TextView
+            android:id="@+id/tv_remained_mine_count"
             android:layout_width="64dp"
             android:layout_height="match_parent" >
         </TextView>
@@ -21,10 +24,9 @@
     <GridView
         android:id="@+id/grid_minefield"
         android:layout_width="match_parent"
-        android:layout_height="320dip"
-        android:columnWidth="38dp"
+        android:layout_height="match_parent"
         android:horizontalSpacing="1dp"
-        android:numColumns="7"
+        android:listSelector="#FFFFFFFF"
         android:verticalSpacing="1dp" >
     </GridView>
 
