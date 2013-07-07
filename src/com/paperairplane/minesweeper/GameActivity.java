@@ -1,28 +1,41 @@
 package com.paperairplane.minesweeper;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
+import android.widget.ToggleButton;
 
-public class GameActivity extends Activity implements OnItemClickListener {
+public class GameActivity extends Activity implements OnItemClickListener,
+		OnTouchListener {
 	private GridView mGridView;
 	private MineFieldListAdapter mAdapter;
 	private TextView mTvMineCount;
 	private MineField mMineField;
+	private ToggleButton mTgFlag;
 	private boolean mFirstClicked;
+	private DisplayUtilities mDu;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game);
+		setupActionBar();
 
 		mTvMineCount = (TextView) findViewById(R.id.tv_remained_mine_count);
+		mTgFlag = (ToggleButton) findViewById(R.id.tb_flag);
+
+		mDu = new DisplayUtilities(this);
 
 		Bundle extras = getIntent().getExtras();
 		int sideLength = extras.getInt("sideLength");
@@ -35,32 +48,74 @@ public class GameActivity extends Activity implements OnItemClickListener {
 		mGridView = (GridView) findViewById(R.id.grid_minefield);
 		mGridView.setNumColumns(sideLength);
 		mGridView.setAdapter(mAdapter);
+		mGridView.setColumnWidth(mDu.getBlockLength(sideLength));
 		mGridView.setOnItemClickListener(this);
+		mGridView.setOnTouchListener(this);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.game, menu);
+		menu.add(Menu.NONE, 0, 1, "Restart")
+				.setIcon(android.R.drawable.ic_menu_revert)
+				.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+		return true;
+	}
+
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		switch (item.getItemId()) {
+		case 0:
+			mMineField.createMineField();
+			mAdapter.notifyDataSetChanged();
+		}
+		return false;
 	}
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
+		if (mTgFlag.isChecked()) {
+			mMineField.flag(position);
+			mAdapter.notifyDataSetChanged();
+			mFirstClicked = true;
+			if (mMineField.won()) {
+				Toast.makeText(this, "You Win!", Toast.LENGTH_LONG).show();
+			}
+			mTvMineCount.setText(Integer.toString(mMineField
+					.getRemainedMineCount()));
+			return;
+		}
 
 		if (mMineField.getNum(position) == BlockState.HAS_MINE) {
 			if (mFirstClicked) {
 				Toast.makeText(this, "You Lose!", Toast.LENGTH_LONG).show();
-			}else{
+			} else {
 				mMineField.createMineField(position);
-				BaseAdapter adapter = (BaseAdapter) mGridView.getAdapter();
-				adapter.notifyDataSetChanged();
-				mFirstClicked = true;
+				mAdapter.notifyDataSetChanged();
 			}
 		} else {
 			mMineField.makeVisible(position);
 			mMineField.remark(position);
-			BaseAdapter adapter = (BaseAdapter) mGridView.getAdapter();
-			adapter.notifyDataSetChanged();
-			mTvMineCount.setText(Integer.toString(mMineField
-					.getRemainedMineCount()));
+			mAdapter.notifyDataSetChanged();
 			if (mMineField.won()) {
 				Toast.makeText(this, "You Win!", Toast.LENGTH_LONG).show();
 			}
 		}
+		mTvMineCount
+				.setText(Integer.toString(mMineField.getRemainedMineCount()));
+		mFirstClicked = true;
+	}
+
+	@Override
+	public boolean onTouch(View v, MotionEvent event) {
+
+		return false;
+	}
+	
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	private void setupActionBar(){
+			getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 }

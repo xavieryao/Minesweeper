@@ -16,6 +16,7 @@ public class MineField {
 	private int mMineAmount;
 	private boolean[] mVisible;
 	private boolean[] mIsEmpty;
+	private boolean[] mFlagged;
 
 	/**
 	 * Constructor of class MineField
@@ -30,10 +31,6 @@ public class MineField {
 			throw new IllegalArgumentException(
 					"The amout of mines should not be greater than max size.");
 		}
-		int area = sideLength * sideLength;
-		mMap = new int[area];
-		mVisible = new boolean[area];
-		mIsEmpty = new boolean[area];
 		mSideLength = sideLength;
 		mMineAmount = mines;
 	}
@@ -92,6 +89,10 @@ public class MineField {
 	 */
 	public void createMineField(int bannedId) {
 		int maxId = mSideLength * mSideLength;
+		mMap = new int[maxId];
+		mVisible = new boolean[maxId];
+		mIsEmpty = new boolean[maxId];
+		mFlagged = new boolean[maxId];
 		addMinesToMap(maxId, bannedId);
 		for (int i = 0; i < maxId; i++) {
 			if (mMap[i] != BlockState.HAS_MINE) {
@@ -169,7 +170,6 @@ public class MineField {
 		Random rnd = new Random();
 		for (int i = 0; i < mMineAmount; i++) {
 			int id = -2;
-			System.out.println(!mines.contains(id) || id == bannedId);
 			while (!mines.contains(id) || id == bannedId) {
 				id = rnd.nextInt(maxId);
 				mines.add(id);
@@ -187,12 +187,12 @@ public class MineField {
 	 */
 	public int getRemainedMineCount() {
 		int amount = 0;
-		for(int i:mMap){
-			if(i == BlockState.HAS_MINE){
+		for (int i = 0; i < mFlagged.length; i++) {
+			if (mFlagged[i]) {
 				amount++;
 			}
 		}
-		return amount;
+		return mMineAmount-amount;
 	}
 
 	/**
@@ -223,9 +223,17 @@ public class MineField {
 		}
 	}
 
+	public void flag(int position) {
+		mFlagged[position] = !mFlagged[position];
+	}
+
+	public boolean flagged(int position) {
+		return mFlagged[position];
+	}
+
 	public void remark(int position) {
-		if(mMap[position]==0){
-			mIsEmpty[position]=true;
+		if (mMap[position] == 0) {
+			mIsEmpty[position] = true;
 		}
 		HashSet<Integer> nearbySafeBlocks = match(position, mSideLength
 				* mSideLength, 0);
@@ -252,50 +260,53 @@ public class MineField {
 				mVisible[i] = true;
 				int cursor = i + 1;
 				if (cursor < maxId && mMap[cursor] != BlockState.HAS_MINE
-						&& (cursor % mSideLength != 0) && !mIsEmpty[cursor]) {
+						&& (cursor % mSideLength != 0) && !mIsEmpty[cursor]
+						&& !mFlagged[i]) {
 					mVisible[cursor] = true;
 				}
 				cursor = i - 1;
 				if (cursor >= 0 && mMap[cursor] != BlockState.HAS_MINE
-						&& ((cursor + 1) % mSideLength != 0)
+						&& ((cursor + 1) % mSideLength != 0 && !mFlagged[i])
 						&& !mIsEmpty[cursor]) {
 					mVisible[cursor] = true;
 				}
 
 				cursor = i - mSideLength - 1;
 				if (cursor >= 0 && mMap[cursor] != BlockState.HAS_MINE
-						&& ((cursor + 1) % mSideLength != 0)
+						&& ((cursor + 1) % mSideLength != 0 && !mFlagged[i])
 						&& !mIsEmpty[cursor]) {
 					mVisible[cursor] = true;
 				}
 
 				cursor = i - mSideLength;
 				if (cursor >= 0 && mMap[cursor] != BlockState.HAS_MINE
-						&& !mIsEmpty[cursor]) {
+						&& !mIsEmpty[cursor] && !mFlagged[i]) {
 					mVisible[cursor] = true;
 				}
 
 				cursor = i - mSideLength + 1;
 				if (cursor >= 0 && mMap[cursor] != BlockState.HAS_MINE
-						&& (cursor % mSideLength != 0) && !mIsEmpty[cursor]) {
+						&& (cursor % mSideLength != 0) && !mIsEmpty[cursor]
+						&& !mFlagged[i]) {
 					mVisible[cursor] = true;
 				}
 
 				cursor = i + mSideLength;
 				if (cursor < maxId && mMap[cursor] != BlockState.HAS_MINE
-						&& !mIsEmpty[cursor]) {
+						&& !mIsEmpty[cursor] && !mFlagged[i]) {
 					mVisible[cursor] = true;
 				}
 
 				cursor = i + mSideLength - 1;
 				if (cursor < maxId && mMap[cursor] != BlockState.HAS_MINE
-						&& ((cursor + 1) % mSideLength != 0)
+						&& ((cursor + 1) % mSideLength != 0 && !mFlagged[i])
 						&& !mIsEmpty[cursor]) {
 					mVisible[cursor] = true;
 				}
 				cursor = i + mSideLength + 1;
 				if (cursor < maxId && mMap[cursor] != BlockState.HAS_MINE
-						&& (cursor % mSideLength != 0) && !mIsEmpty[cursor]) {
+						&& (cursor % mSideLength != 0) && !mIsEmpty[cursor]
+						&& !mFlagged[i]) {
 					mVisible[cursor] = true;
 				}
 			}

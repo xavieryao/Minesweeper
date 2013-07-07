@@ -9,6 +9,8 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
 
+    <!-- 边长输入框 -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,10 +26,12 @@
             android:id="@+id/et_side_length"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/default_side_length"
             android:hint="@string/side_length_hint"
-            android:inputType="number" />
+            android:inputType="number"
+            android:text="@string/default_side_length" />
     </LinearLayout>
+
+    <!-- 雷数输入框 -->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -49,10 +53,20 @@
             android:text="@string/default_mine_amount" />
     </LinearLayout>
 
+    <!-- 开始游戏按钮 -->
+
     <Button
         android:id="@+id/btn_start"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/start" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:gravity="center"
+        android:text="Designed By Prof.X on Paper Airplane Dev Team\nAlpha Preview" />
 
 </LinearLayout>

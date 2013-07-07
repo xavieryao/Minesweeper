@@ -42,16 +42,15 @@ public class MineFieldListAdapter extends BaseAdapter {
 			holder.tvMine.setClickable(false);
 		} else if (mMineField.isVisable(position)) {
 			int num = mMineField.getNum(position);
-			holder.tvMine
-					.setText(Integer.toString(num));
-			holder.tvMine.setBackgroundColor(0xFFFFFFFF);
+			holder.tvMine.setText(Integer.toString(num));
+			holder.tvMine.setBackgroundColor(0x00FFFFFF);
 			int color = 0xFF000000;
-			switch(num){
+			switch (num) {
 			case 1:
 				color = 0xFF000000;
 				break;
 			case 2:
-				color = 0xFFFFEFD5;
+				color = 0xFFFF69B4;
 				break;
 			case 3:
 				color = 0xFFDB7093;
@@ -72,8 +71,11 @@ public class MineFieldListAdapter extends BaseAdapter {
 				color = 0xFFDC143C;
 				break;
 			}
+
 			holder.tvMine.setTextColor(color);
 			holder.tvMine.setClickable(false);
+		} else if(mMineField.flagged(position)){
+			holder.tvMine.setText("?");
 		}
 		return convertView;
 	}
