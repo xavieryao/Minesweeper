@@ -116,6 +116,8 @@ public class GameActivity extends Activity implements OnItemClickListener,
 	
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	private void setupActionBar(){
-			getActionBar().setDisplayHomeAsUpEnabled(true);
+			if(Build.VERSION.SDK_INT>1){
+				getActionBar().setDisplayHomeAsUpEnabled(true);
+			}
 	}
 }
