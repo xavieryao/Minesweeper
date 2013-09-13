@@ -53,13 +53,15 @@ public class GameActivity extends Activity implements OnItemClickListener,
 		mGridView.setOnTouchListener(this);
 	}
 
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.game, menu);
-		menu.add(Menu.NONE, 0, 1, "Restart")
-				.setIcon(android.R.drawable.ic_menu_revert)
-				.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+		MenuItem item = menu.add(Menu.NONE, 0, 1, "Restart")
+				.setIcon(android.R.drawable.ic_menu_revert);
+		if(Build.VERSION.SDK_INT>10)
+				item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		return true;
 	}
 
@@ -69,6 +71,9 @@ public class GameActivity extends Activity implements OnItemClickListener,
 		case 0:
 			mMineField.createMineField();
 			mAdapter.notifyDataSetChanged();
+			break;
+		case android.R.id.home:
+			finish();
 		}
 		return false;
 	}
@@ -116,7 +121,7 @@ public class GameActivity extends Activity implements OnItemClickListener,
 	
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	private void setupActionBar(){
-			if(Build.VERSION.SDK_INT>1){
+			if(Build.VERSION.SDK_INT>10){
 				getActionBar().setDisplayHomeAsUpEnabled(true);
 			}
 	}
