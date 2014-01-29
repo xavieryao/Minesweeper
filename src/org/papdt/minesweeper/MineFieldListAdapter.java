@@ -26,9 +26,9 @@ public class MineFieldListAdapter extends BaseAdapter {
 	public int getCount() {
 		return mMineField.getSize();
 	}
-	
+
 	@Override
-	public boolean isEnabled(int position){
+	public boolean isEnabled(int position) {
 		return !mMineField.isVisable(position);
 	}
 
@@ -44,6 +44,7 @@ public class MineFieldListAdapter extends BaseAdapter {
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
+		holder.tvMine.setBackgroundColor(0xFF00CCFF);
 		if (mMineField.isEmpty(position)) {
 			holder.tvMine.setVisibility(View.INVISIBLE);
 			holder.tvMine.setClickable(false);
@@ -80,8 +81,8 @@ public class MineFieldListAdapter extends BaseAdapter {
 			}
 
 			holder.tvMine.setTextColor(color);
-//			holder.tvMine.setClickable(false);
-		} else if(mMineField.flagged(position)){
+			// holder.tvMine.setClickable(false);
+		} else if (mMineField.flagged(position)) {
 			holder.tvMine.setText("?");
 		} else {
 			holder.tvMine.setText("");

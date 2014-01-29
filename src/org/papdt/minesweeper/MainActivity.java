@@ -5,15 +5,19 @@ import org.papdt.minesweeper.R;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity implements OnClickListener {
-	
+
 	private EditText mEtSideLength;
 	private EditText mEtMineAmount;
 
@@ -23,9 +27,18 @@ public class MainActivity extends Activity implements OnClickListener {
 		setContentView(R.layout.activity_main);
 		Button btnStart = (Button) findViewById(R.id.btn_start);
 		btnStart.setOnClickListener(this);
-		
-		mEtSideLength=(EditText)findViewById(R.id.et_side_length);
-		mEtMineAmount=(EditText)findViewById(R.id.et_mine_amount);
+		TextView tvInfo = (TextView) findViewById(R.id.tv_info);
+		PackageManager pm = getPackageManager();
+		try {
+			PackageInfo info = pm.getPackageInfo(getPackageName(), 0);
+			String text = getString(R.string.info,info.versionName,info.versionCode);
+			tvInfo.setText(text);
+		} catch (NameNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		mEtSideLength = (EditText) findViewById(R.id.et_side_length);
+		mEtMineAmount = (EditText) findViewById(R.id.et_mine_amount);
 	}
 
 	@Override
@@ -40,10 +53,14 @@ public class MainActivity extends Activity implements OnClickListener {
 		int id = v.getId();
 		switch (id) {
 		case R.id.btn_start:
-			int sideLength = Integer.parseInt(mEtSideLength.getText().toString());
-			int mineAmount = Integer.parseInt(mEtMineAmount.getText().toString());
-			if(sideLength<=0||mineAmount<=0||mineAmount>=sideLength*sideLength){
-				Toast.makeText(this, "Illegal Argument!!", Toast.LENGTH_LONG).show();
+			int sideLength = Integer.parseInt(mEtSideLength.getText()
+					.toString());
+			int mineAmount = Integer.parseInt(mEtMineAmount.getText()
+					.toString());
+			if (sideLength <= 0 || mineAmount <= 0
+					|| mineAmount >= sideLength * sideLength) {
+				Toast.makeText(this, "Illegal Argument!!", Toast.LENGTH_LONG)
+						.show();
 				break;
 			}
 			Intent i = new Intent(MainActivity.this, GameActivity.class);

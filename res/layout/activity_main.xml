@@ -60,13 +60,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/start" />
-
+	<!-- 关于信息 -->
+	
     <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
+        android:id="@+id/tv_info"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:gravity="center"
-        android:text="Designed By Prof.X on Paper Airplane Dev Team\nAlpha Preview" />
+        android:gravity="center" />
 
 </LinearLayout>

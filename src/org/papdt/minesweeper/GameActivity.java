@@ -45,14 +45,13 @@ public class GameActivity extends Activity implements OnItemClickListener,
 		int mineAmount = extras.getInt("mineAmount");
 
 		mTvMineCount.setText(Integer.toString(mineAmount));
-		
+
 		mMineField = new MineField(sideLength, mineAmount);
 		mMineField.createMineField();
+		Log.i("GameActivity", mMineField.toString());
 
-		Log.v("GameActivity",mMineField.toString());
-		
 		mAdapter = new MineFieldListAdapter(mMineField, GameActivity.this);
-		
+
 		mGridView = (GridView) findViewById(R.id.grid_minefield);
 		mGridView.setNumColumns(sideLength);
 		mGridView.setAdapter(mAdapter);
@@ -77,8 +76,11 @@ public class GameActivity extends Activity implements OnItemClickListener,
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		switch (item.getItemId()) {
 		case 0:
+			// ÖØÖÃ
 			mMineField.createMineField();
-			mAdapter.notifyDataSetChanged();
+			Log.i("GameActivity",mMineField.toString());
+			mAdapter.notifyDataSetInvalidated();
+			mTvMineCount.setText(mMineField.getRemainedMineCount());
 			break;
 		case android.R.id.home:
 			finish();
@@ -89,14 +91,14 @@ public class GameActivity extends Activity implements OnItemClickListener,
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
-		if(mMineField.flagged(position)){
+		if (mMineField.flagged(position)) {
 			mMineField.flag(position);
 			mAdapter.notifyDataSetChanged();
-			mTvMineCount
-			.setText(Integer.toString(mMineField.getRemainedMineCount()));
+			mTvMineCount.setText(Integer.toString(mMineField
+					.getRemainedMineCount()));
 			return;
 		}
-		
+
 		if (mTgFlag.isChecked()) {
 			mMineField.flag(position);
 			mAdapter.notifyDataSetChanged();
@@ -123,7 +125,7 @@ public class GameActivity extends Activity implements OnItemClickListener,
 		mMineField.makeVisible(position);
 		mMineField.remark(position);
 		mAdapter.notifyDataSetChanged();
-		if (mMineField.won()){
+		if (mMineField.won()) {
 			win();
 			return;
 		}
@@ -131,13 +133,13 @@ public class GameActivity extends Activity implements OnItemClickListener,
 				.setText(Integer.toString(mMineField.getRemainedMineCount()));
 		mFirstClicked = true;
 	}
-	
-	private void win(){
+
+	private void win() {
 		Toast.makeText(this, "You Win!", Toast.LENGTH_LONG).show();
 		finish();
 	}
-	
-	private void lose(){
+
+	private void lose() {
 		Toast.makeText(this, "You Lose!", Toast.LENGTH_LONG).show();
 		finish();
 	}

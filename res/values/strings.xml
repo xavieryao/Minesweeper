@@ -7,18 +7,19 @@
 
     <!-- Strings for buttons on main activity -->
     <string name="start">Start</string>
+    <string name="info" formatted="false">Designed By Prof.X\nPaper Airplane Dev Team\nAlpha Preview \n%s (%04d)</string>
     
     <!-- String used for customize mine field -->
     
-    <string name="side_length_hint">Input side length here (>0)</string>
-    <string name="mine_amount_hint">Input mine amount here (>0)</string>
+    <string name="side_length_hint">Input side length here</string>
+    <string name="mine_amount_hint">Input mine amount here</string>
 	<string name="side_length">Side Length</string>
 	<string name="mine_amount">Mine Amount</string>
     
 	<!-- Default minefield settings -->
 	
-	<string name="default_mine_amount">10</string>
-	<string name="default_side_length">7</string>
+	<string name="default_mine_amount">20</string>
+	<string name="default_side_length">8</string>
 	
 	<!-- Flag toggle -->
 	

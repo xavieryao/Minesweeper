@@ -8,7 +8,6 @@
         android:id="@+id/tv_mine"
         android:layout_width="38dp"
         android:layout_height="38dp"
-        android:background="#FF00CCFF"
         android:gravity="center"
         android:textColor="#FFFFFFFF"
         android:textStyle="bold"

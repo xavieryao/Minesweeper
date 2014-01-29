@@ -156,7 +156,7 @@ public class MineField {
 				int num = mMap[i * mSideLength + j];
 				String str = (num == BlockState.HAS_MINE) ? "*" : Integer
 						.toString(num);
-				str = (mIsEmpty[i * mSideLength + j]) ? " " : str;
+				str = (mMap[i * mSideLength + j] == 0) ? " " : str;
 				sb.append(str);
 			}
 			sb.append("\n");
