@@ -1,4 +1,4 @@
-package com.paperairplane.minesweeper;
+package org.papdt.minesweeper;
 
 import android.content.Context;
 import android.util.DisplayMetrics;

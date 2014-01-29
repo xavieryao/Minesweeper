@@ -1,4 +1,6 @@
-package com.paperairplane.minesweeper;
+package org.papdt.minesweeper;
+
+import org.papdt.minesweeper.R;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -23,6 +25,11 @@ public class MineFieldListAdapter extends BaseAdapter {
 	@Override
 	public int getCount() {
 		return mMineField.getSize();
+	}
+	
+	@Override
+	public boolean isEnabled(int position){
+		return !mMineField.isVisable(position);
 	}
 
 	@Override
@@ -73,9 +80,11 @@ public class MineFieldListAdapter extends BaseAdapter {
 			}
 
 			holder.tvMine.setTextColor(color);
-			holder.tvMine.setClickable(false);
+//			holder.tvMine.setClickable(false);
 		} else if(mMineField.flagged(position)){
 			holder.tvMine.setText("?");
+		} else {
+			holder.tvMine.setText("");
 		}
 		return convertView;
 	}

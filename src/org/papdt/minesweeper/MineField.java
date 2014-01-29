@@ -1,4 +1,4 @@
-package com.paperairplane.minesweeper;
+package org.papdt.minesweeper;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -17,6 +17,7 @@ public class MineField {
 	private boolean[] mVisible;
 	private boolean[] mIsEmpty;
 	private boolean[] mFlagged;
+	private long mSeed;
 
 	/**
 	 * Constructor of class MineField
@@ -86,6 +87,7 @@ public class MineField {
 	 * have a mine.
 	 * 
 	 * @param bannedId
+	 * @param seed
 	 */
 	public void createMineField(int bannedId) {
 		int maxId = mSideLength * mSideLength;
@@ -93,7 +95,7 @@ public class MineField {
 		mVisible = new boolean[maxId];
 		mIsEmpty = new boolean[maxId];
 		mFlagged = new boolean[maxId];
-		addMinesToMap(maxId, bannedId);
+		addMinesToMap(maxId, bannedId, mSeed);
 		for (int i = 0; i < maxId; i++) {
 			if (mMap[i] != BlockState.HAS_MINE) {
 				mMap[i] = getNum(i, maxId);
@@ -101,12 +103,86 @@ public class MineField {
 		}
 	}
 
-	private int getNum(int position, int maxId) {
-		return match(position, maxId, BlockState.HAS_MINE).size();
-	}
-
 	public int getNum(int position) {
 		return mMap[position];
+	}
+
+	/**
+	 * Method invoked to generate a random mine field.
+	 */
+	public void createMineField() {
+		mSeed = System.currentTimeMillis();
+		createMineField(-1);
+	}
+
+	/**
+	 * Get the amount of mines in the mine field.
+	 * 
+	 * @return amount
+	 */
+	public int getRemainedMineCount() {
+		int amount = 0;
+		for (int i = 0; i < mFlagged.length; i++) {
+			if (mFlagged[i]) {
+				amount++;
+			}
+		}
+		return mMineAmount - amount;
+	}
+
+	/**
+	 * Get the size of the mine field.
+	 * 
+	 * @return size
+	 */
+	public int getSize() {
+		return mSideLength * mSideLength;
+	}
+
+	/**
+	 * Print current mine field map.
+	 */
+	public void print() {
+		System.out.println(this.toString());
+	}
+	
+	@Override
+	public String toString(){
+		StringBuilder sb = new StringBuilder("--Here prints the minefield map:\n");
+		int length = mMap.length;
+		int times = length / mSideLength;
+		for (int i = 0; i < times; i++) {
+			for (int j = 0; j < mSideLength; j++) {
+				int num = mMap[i * mSideLength + j];
+				String str = (num == BlockState.HAS_MINE) ? "*" : Integer
+						.toString(num);
+				str = (mIsEmpty[i * mSideLength + j]) ? " " : str;
+				sb.append(str);
+			}
+			sb.append("\n");
+		}
+		return sb.toString();
+	}
+
+	public void flag(int position) {
+		mFlagged[position] = !mFlagged[position];
+	}
+
+	public boolean flagged(int position) {
+		return mFlagged[position];
+	}
+
+	public void remark(int position) {
+		if (mMap[position] == 0) {
+			mIsEmpty[position] = true;
+		}
+		HashSet<Integer> nearbySafeBlocks = match(position, mSideLength
+				* mSideLength, 0);
+		while (nearbySafeBlocks.size() > 0) {
+			markAsEmpty(nearbySafeBlocks);
+			nearbySafeBlocks = search(nearbySafeBlocks, mSideLength
+					* mSideLength);
+		}
 	}
 
 	private HashSet<Integer> match(int position, int maxId, int condition) {
@@ -158,89 +234,22 @@ public class MineField {
 		return matchedBlocks;
 	}
 
-	/**
-	 * Method invoked to generate a random mine field.
-	 */
-	public void createMineField() {
-		createMineField(-1);
+	private int getNum(int position, int maxId) {
+		return match(position, maxId, BlockState.HAS_MINE).size();
 	}
 
-	private void addMinesToMap(int maxId, int bannedId) {
+	private void addMinesToMap(int maxId, int bannedId, long seed) {
 		ArrayList<Integer> mines = new ArrayList<Integer>();
-		Random rnd = new Random();
-		for (int i = 0; i < mMineAmount; i++) {
-			int id = -2;
-			while (!mines.contains(id) || id == bannedId) {
+		Random rnd = new Random(seed);
+		for (int i = 0, id = rnd.nextInt(maxId); i < mMineAmount; i++, id = rnd
+				.nextInt(maxId)) {
+			while (mines.contains(id) || id == bannedId) {
 				id = rnd.nextInt(maxId);
-				mines.add(id);
 			}
+			mines.add(id);
 		}
 		for (Integer i : mines) {
 			mMap[i] = BlockState.HAS_MINE;
-		}
-	}
-
-	/**
-	 * Get the amount of mines in the mine field.
-	 * 
-	 * @return amount
-	 */
-	public int getRemainedMineCount() {
-		int amount = 0;
-		for (int i = 0; i < mFlagged.length; i++) {
-			if (mFlagged[i]) {
-				amount++;
-			}
-		}
-		return mMineAmount-amount;
-	}
-
-	/**
-	 * Get the size of the mine field.
-	 * 
-	 * @return size
-	 */
-	public int getSize() {
-		return mSideLength * mSideLength;
-	}
-
-	/**
-	 * Print current mine field map.
-	 */
-	public void print() {
-		System.out.println("--Here prints the minefield map:");
-		int length = mMap.length;
-		int times = length / mSideLength;
-		for (int i = 0; i < times; i++) {
-			for (int j = 0; j < mSideLength; j++) {
-				int num = mMap[i * mSideLength + j];
-				String str = (num == BlockState.HAS_MINE) ? "*" : Integer
-						.toString(num);
-				str = (mIsEmpty[i * mSideLength + j]) ? " " : str;
-				System.out.print(str);
-			}
-			System.out.print("\n");
-		}
-	}
-
-	public void flag(int position) {
-		mFlagged[position] = !mFlagged[position];
-	}
-
-	public boolean flagged(int position) {
-		return mFlagged[position];
-	}
-
-	public void remark(int position) {
-		if (mMap[position] == 0) {
-			mIsEmpty[position] = true;
-		}
-		HashSet<Integer> nearbySafeBlocks = match(position, mSideLength
-				* mSideLength, 0);
-		while (nearbySafeBlocks.size() > 0) {
-			markAsEmpty(nearbySafeBlocks);
-			nearbySafeBlocks = search(nearbySafeBlocks, mSideLength
-					* mSideLength);
 		}
 	}
 
@@ -312,4 +321,5 @@ public class MineField {
 			}
 		}
 	}
+
 }

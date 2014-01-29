@@ -1,4 +1,6 @@
-package com.paperairplane.minesweeper;
+package org.papdt.minesweeper;
+
+import org.papdt.minesweeper.R;
 
 import android.os.Bundle;
 import android.app.Activity;

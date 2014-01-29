@@ -1,9 +1,12 @@
-package com.paperairplane.minesweeper;
+package org.papdt.minesweeper;
+
+import org.papdt.minesweeper.R;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -42,9 +45,14 @@ public class GameActivity extends Activity implements OnItemClickListener,
 		int mineAmount = extras.getInt("mineAmount");
 
 		mTvMineCount.setText(Integer.toString(mineAmount));
+		
 		mMineField = new MineField(sideLength, mineAmount);
 		mMineField.createMineField();
+
+		Log.v("GameActivity",mMineField.toString());
+		
 		mAdapter = new MineFieldListAdapter(mMineField, GameActivity.this);
+		
 		mGridView = (GridView) findViewById(R.id.grid_minefield);
 		mGridView.setNumColumns(sideLength);
 		mGridView.setAdapter(mAdapter);
@@ -58,10 +66,10 @@ public class GameActivity extends Activity implements OnItemClickListener,
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.game, menu);
-		MenuItem item = menu.add(Menu.NONE, 0, 1, "Restart")
-				.setIcon(android.R.drawable.ic_menu_revert);
-		if(Build.VERSION.SDK_INT>10)
-				item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+		MenuItem item = menu.add(Menu.NONE, 0, 1, "Restart").setIcon(
+				android.R.drawable.ic_menu_revert);
+		if (Build.VERSION.SDK_INT > 10)
+			item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		return true;
 	}
 
@@ -81,12 +89,21 @@ public class GameActivity extends Activity implements OnItemClickListener,
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
+		if(mMineField.flagged(position)){
+			mMineField.flag(position);
+			mAdapter.notifyDataSetChanged();
+			mTvMineCount
+			.setText(Integer.toString(mMineField.getRemainedMineCount()));
+			return;
+		}
+		
 		if (mTgFlag.isChecked()) {
 			mMineField.flag(position);
 			mAdapter.notifyDataSetChanged();
 			mFirstClicked = true;
 			if (mMineField.won()) {
-				Toast.makeText(this, "You Win!", Toast.LENGTH_LONG).show();
+				win();
+				return;
 			}
 			mTvMineCount.setText(Integer.toString(mMineField
 					.getRemainedMineCount()));
@@ -95,22 +112,34 @@ public class GameActivity extends Activity implements OnItemClickListener,
 
 		if (mMineField.getNum(position) == BlockState.HAS_MINE) {
 			if (mFirstClicked) {
-				Toast.makeText(this, "You Lose!", Toast.LENGTH_LONG).show();
+				lose();
+				return;
 			} else {
+				Log.w("GameActivity", "FirstClick and Boom!");
 				mMineField.createMineField(position);
 				mAdapter.notifyDataSetChanged();
 			}
-		} else {
-			mMineField.makeVisible(position);
-			mMineField.remark(position);
-			mAdapter.notifyDataSetChanged();
-			if (mMineField.won()) {
-				Toast.makeText(this, "You Win!", Toast.LENGTH_LONG).show();
-			}
+		}
+		mMineField.makeVisible(position);
+		mMineField.remark(position);
+		mAdapter.notifyDataSetChanged();
+		if (mMineField.won()){
+			win();
+			return;
 		}
 		mTvMineCount
 				.setText(Integer.toString(mMineField.getRemainedMineCount()));
 		mFirstClicked = true;
+	}
+	
+	private void win(){
+		Toast.makeText(this, "You Win!", Toast.LENGTH_LONG).show();
+		finish();
+	}
+	
+	private void lose(){
+		Toast.makeText(this, "You Lose!", Toast.LENGTH_LONG).show();
+		finish();
 	}
 
 	@Override
@@ -118,11 +147,11 @@ public class GameActivity extends Activity implements OnItemClickListener,
 
 		return false;
 	}
-	
+
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	private void setupActionBar(){
-			if(Build.VERSION.SDK_INT>10){
-				getActionBar().setDisplayHomeAsUpEnabled(true);
-			}
+	private void setupActionBar() {
+		if (Build.VERSION.SDK_INT > 10) {
+			getActionBar().setDisplayHomeAsUpEnabled(true);
+		}
 	}
 }

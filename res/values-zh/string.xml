@@ -16,8 +16,8 @@
 
     <!-- Default minefield settings -->
 
-    <string name="default_mine_amount">10</string>
-    <string name="default_side_length">7</string>
+    <string name="default_mine_amount">25</string>
+    <string name="default_side_length">8</string>
 
     <!-- Flag toggle -->
 
