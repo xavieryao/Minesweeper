@@ -76,11 +76,11 @@ public class GameActivity extends Activity implements OnItemClickListener,
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		switch (item.getItemId()) {
 		case 0:
-			// ÖØÖÃ
+			// Reset
 			mMineField.createMineField();
 			Log.i("GameActivity",mMineField.toString());
 			mAdapter.notifyDataSetInvalidated();
-			mTvMineCount.setText(mMineField.getRemainedMineCount());
+			mTvMineCount.setText(Integer.toString(mMineField.getRemainedMineCount()));
 			break;
 		case android.R.id.home:
 			finish();

@@ -29,7 +29,7 @@ public class MineFieldListAdapter extends BaseAdapter {
 
 	@Override
 	public boolean isEnabled(int position) {
-		return !mMineField.isVisable(position);
+		return !mMineField.isVisable(position) || !mMineField.isEmpty(position);
 	}
 
 	@Override

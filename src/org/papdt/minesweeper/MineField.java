@@ -115,6 +115,10 @@ public class MineField {
 		createMineField(-1);
 	}
 
+	public void setSeed(long seed) {
+		mSeed = seed;
+	}
+
 	/**
 	 * Get the amount of mines in the mine field.
 	 * 
@@ -145,10 +149,11 @@ public class MineField {
 	public void print() {
 		System.out.println(this.toString());
 	}
-	
+
 	@Override
-	public String toString(){
-		StringBuilder sb = new StringBuilder("--Here prints the minefield map:\n");
+	public String toString() {
+		StringBuilder sb = new StringBuilder(
+				"--Here prints the minefield map:\n");
 		int length = mMap.length;
 		int times = length / mSideLength;
 		for (int i = 0; i < times; i++) {
@@ -174,14 +179,15 @@ public class MineField {
 
 	public void remark(int position) {
 		if (mMap[position] == 0) {
-			mIsEmpty[position] = true;
-		}
-		HashSet<Integer> nearbySafeBlocks = match(position, mSideLength
-				* mSideLength, 0);
-		while (nearbySafeBlocks.size() > 0) {
-			markAsEmpty(nearbySafeBlocks);
-			nearbySafeBlocks = search(nearbySafeBlocks, mSideLength
-					* mSideLength);
+			remarkEmptyBlock(position, -1);
+		} else {
+			HashSet<Integer> nearbySafeBlocks = match(position, mSideLength
+					* mSideLength, 0);
+			while (nearbySafeBlocks.size() > 0) {
+				markAsEmpty(nearbySafeBlocks);
+				nearbySafeBlocks = search(nearbySafeBlocks, mSideLength
+						* mSideLength);
+			}
 		}
 	}
 
@@ -318,6 +324,67 @@ public class MineField {
 						&& !mFlagged[i]) {
 					mVisible[cursor] = true;
 				}
+			}
+		}
+	}
+	
+	private void remarkEmptyBlock(int position,int blocked){
+		if(mMap[position] == 0){
+			mIsEmpty[position] = true;
+		}
+		int maxId = mSideLength * mSideLength;
+		HashSet<Integer> matchedBlocks = new HashSet<Integer>();
+		int cursor = position + 1;
+		if (cursor < maxId && (cursor % mSideLength != 0)
+				&& !mIsEmpty[cursor]) {
+			matchedBlocks.add(cursor);
+		}
+
+		cursor = position - 1;
+		if (cursor >= 0 && ((cursor + 1) % mSideLength != 0)
+				&& !mIsEmpty[cursor]) {
+			matchedBlocks.add(cursor);
+		}
+
+		cursor = position - mSideLength - 1;
+		if (cursor >= 0 && ((cursor + 1) % mSideLength != 0)
+				&& !mIsEmpty[cursor]) {
+			matchedBlocks.add(cursor);
+		}
+
+		cursor = position - mSideLength;
+		if (cursor >= 0 && !mIsEmpty[cursor]) {
+			matchedBlocks.add(cursor);
+		}
+
+		cursor = position - mSideLength + 1;
+		if (cursor >= 0 && (cursor % mSideLength != 0) && !mIsEmpty[cursor]) {
+			matchedBlocks.add(cursor);
+		}
+
+		cursor = position + mSideLength;
+		if (cursor < maxId && !mIsEmpty[cursor]) {
+			matchedBlocks.add(cursor);
+		}
+
+		cursor = position + mSideLength - 1;
+		if (cursor < maxId && ((cursor + 1) % mSideLength != 0)
+				&& !mIsEmpty[cursor]) {
+			matchedBlocks.add(cursor);
+		}
+		cursor = position + mSideLength + 1;
+		if (cursor < maxId && (cursor % mSideLength != 0)
+				&& !mIsEmpty[cursor]) {
+			matchedBlocks.add(cursor);
+		}
+		
+		for (int i : matchedBlocks){
+			mVisible[i] = true;
+		}
+		
+		for (int i : matchedBlocks){
+			if (mMap[i] == 0 && i != blocked){
+				remarkEmptyBlock(i,position);
 			}
 		}
 	}
